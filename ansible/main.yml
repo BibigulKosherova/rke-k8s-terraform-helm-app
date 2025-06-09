@@ -1,0 +1,40 @@
+- name: Setup VMs for RKE
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create rke user
+      user:
+        name: rke
+        groups: docker
+        append: yes
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Allow rke to use sudo without password
+      copy:
+        dest: /etc/sudoers.d/rke
+        content: "rke ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: root
+        mode: '0440'
+
+    - name: Create .ssh directory for rke
+      file:
+        path: /home/rke/.ssh
+        state: directory
+        mode: '0700'
+        owner: rke
+        group: rke
+
+    - name: Set authorized_keys for rke user
+      copy:
+        content: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        dest: /home/rke/.ssh/authorized_keys
+        mode: '0600'
+        owner: rke
+        group: rke
+
+  roles:
+    - docker
+    - kubelet_prereqs

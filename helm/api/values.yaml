@@ -1,0 +1,32 @@
+replicaCount: 2
+
+image:
+  repository: bibigul28/api
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 3001
+
+env:
+  DB_HOST: mysql.default.svc.cluster.local
+  DB_PORT: "3306"
+  PORT: "3001"
+  API_KEY: "some-api-key"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+livenessProbe:
+  path: /health
+  port: 3001
+
+readinessProbe:
+  path: /health
+  port: 3001
