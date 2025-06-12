@@ -120,7 +120,7 @@ function install_metrics_server() {
     kubectl top pods -A 2>/dev/null || echo "Metrics not ready yet."
 }
 
-prepare_bastion
+# prepare_bastion
 create_instance
 update_ip
 echo "Waiting 20 seconds"

@@ -23,6 +23,11 @@ resource "aws_instance" "web" {
   key_name      = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.allow_all.id]
   associate_public_ip_address = var.ip_on_launch
+ 
+  root_block_device {
+    volume_size = 30       
+    volume_type = "gp3"      
+  }
 
   tags = {
     Name = "rke-node-${count.index}"
