@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: bibigul28/api
-  tag: latest
+  tag: "1.0.0"
   pullPolicy: IfNotPresent
 
 service:
@@ -12,7 +12,13 @@ service:
 env:
   DB_HOST: mysql-mysql
   DB_PORT: "3306"
+  DB_USER: appuser
+  DB_PASS: appp@ss
+  DB_NAME: appdb
   PORT: "3001"
+
+secret:
+  API_KEY: kaizen123 
 
 resources:
   requests:

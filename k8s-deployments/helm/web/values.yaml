@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: bibigul28/web  
-  tag: latest
+  tag: "v1.0.1"
   pullPolicy: Always
 
 service:

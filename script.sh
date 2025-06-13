@@ -120,6 +120,15 @@ function install_metrics_server() {
     kubectl top pods -A 2>/dev/null || echo "Metrics not ready yet."
 }
 
+function deploy_helm_apps() {
+    echo "[INFO] Deploying Helm charts using Terraform..."
+    cd ~/rke-k8s-terraform-helm-app/k8s-deployments
+    terraform init -input=false
+    terraform apply -auto-approve
+    cd -
+}
+
+
 # prepare_bastion
 create_instance
 update_ip
@@ -141,3 +150,21 @@ done
 create_rke_cluster
 create_sc
 install_metrics_server
+deploy_helm_apps
+
+create_rke_cluster
+create_sc
+install_metrics_server
+deploy_helm_apps
+echo "[INFO] Verifying Helm releases and services..."
+kubectl get pods -A
+kubectl get svc -A
+
+
+
+# check kubectl get pods
+# check kubectl get svc
+#  to check Backend APi: curl http://node_IP:api-api_Port/api/status
+#  to check Web: curl http://node_IP:web-web_Port
+
+# to check mysql: kubectl exec -it mysql-mysql-0 -- bash     mysql -u root -p       Enter password: r00tP@ss

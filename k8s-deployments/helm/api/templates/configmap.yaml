@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-config
+data:
+  DBHOST: {{ .Values.env.DB_HOST | quote }}
+  DBPORT: {{ .Values.env.DB_PORT | quote }}
+  DBUSER: {{ .Values.env.DB_USER | quote }}
+  DBPASS: {{ .Values.env.DB_PASS | quote }}
+  DB: {{ .Values.env.DB_NAME | quote }}
+  PORT: {{ .Values.env.PORT | quote }}

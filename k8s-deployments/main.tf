@@ -4,23 +4,28 @@ provider "helm" {
   }
 }
 
+resource "helm_release" "mysql" {
+  name       = "mysql"
+  chart      = "${path.module}/helm/mysql"
+  namespace  = "default"
+}
+
 resource "helm_release" "api" {
   name       = "api"
-  chart      = 
+  chart      = "${path.module}/helm/api"
   namespace  = "default"
-  values     = 
+
+  values = [
+    file("${path.module}/helm/api/values.yaml")
+  ]
 }
 
 resource "helm_release" "web" {
   name       = "web"
-  chart      = 
+  chart      = "${path.module}/helm/web"
   namespace  = "default"
-  values     = 
-}
 
-resource "helm_release" "mysql" {
-  name       = "mysql"
-  chart      = 
-  namespace  = "default"
-  values     = 
+  values = [
+    file("${path.module}/helm/web/values.yaml")
+  ]
 }
