@@ -1,0 +1,36 @@
+replicaCount: 1  # Single node for learning (change to 3 for production)
+
+image:
+  repository: mysql
+  tag: 5.7
+  pullPolicy: IfNotPresent
+
+auth:
+  rootPassword: "r00tP@ss"  # Override with --set in production
+  database: "appdb"
+  username: "appuser"
+  password: "appp@ss"  # For your Node.js API to connect
+
+persistence:
+  size: 10Gi
+  storageClass: ""  # Uses default
+
+service:
+  type: ClusterIP
+  port: 3306
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+
+probes:
+  tcpSocketPort: 3306
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 2
+  failureThreshold: 3
+

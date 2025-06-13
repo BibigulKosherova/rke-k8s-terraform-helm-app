@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-mysql
+  labels:
+    app: mysql
+spec:
+  serviceName: {{ .Release.Name }}-mysql
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secret
+              key: rootPassword
+        - name: MYSQL_DATABASE
+          value: {{ .Values.auth.database | quote }}
+        - name: MYSQL_USER
+          value: {{ .Values.auth.username | quote }}
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-mysql-secret
+              key: password
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.probes.tcpSocketPort }}
+          initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+          failureThreshold: {{ .Values.probes.failureThreshold }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.probes.tcpSocketPort }}
+          initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+          failureThreshold: {{ .Values.probes.failureThreshold }}
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size }}
+      {{- if .Values.persistence.storageClass }}
+      storageClassName: {{ .Values.persistence.storageClass }}
+      {{- end }}
