@@ -129,7 +129,7 @@ function deploy_helm_apps() {
 }
 
 
-# prepare_bastion
+prepare_bastion
 create_instance
 update_ip
 echo "Waiting 20 seconds"
@@ -164,6 +164,7 @@ kubectl get svc -A
 
 # check kubectl get pods
 # check kubectl get svc
+# kubectl get nodes
 #  to check Backend APi: curl http://node_IP:api-api_Port/api/status
 #  to check Web: curl http://node_IP:web-web_Port
 
