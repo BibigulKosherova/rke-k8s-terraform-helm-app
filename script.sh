@@ -120,6 +120,20 @@ function install_metrics_server() {
     kubectl top pods -A 2>/dev/null || echo "Metrics not ready yet."
 }
 
+function install_nginx_ingress() {
+    echo "[INFO] Installing NGINX Ingress Controller..."
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
+
+    helm install ingress ingress-nginx/ingress-nginx \
+      --set controller.service.type=NodePort \
+      --set controller.service.nodePorts.http=30080 \
+      --set controller.service.nodePorts.https=30443
+
+    echo "[INFO] NGINX Ingress Controller installed on NodePort 30080 (HTTP), 30443 (HTTPS)."
+}
+
+
 function deploy_helm_apps() {
     echo "[INFO] Deploying Helm charts using Terraform..."
     cd ~/rke-k8s-terraform-helm-app/k8s-deployments
@@ -137,7 +151,6 @@ sleep 20
 ansible
 
 echo "[INFO] Waiting for Docker to become ready on all nodes..."
-
 for ip in "${ips[@]}"; do
   echo "Checking Docker on $ip..."
   until ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa rke@$ip "docker info" &>/dev/null; do
@@ -150,11 +163,7 @@ done
 create_rke_cluster
 create_sc
 install_metrics_server
-deploy_helm_apps
-
-create_rke_cluster
-create_sc
-install_metrics_server
+install_nginx_ingress 
 deploy_helm_apps
 echo "[INFO] Verifying Helm releases and services..."
 kubectl get pods -A
@@ -162,10 +171,7 @@ kubectl get svc -A
 
 
 
-# check kubectl get pods
-# check kubectl get svc
-# kubectl get nodes
-#  to check Backend APi: curl http://node_IP:api-api_Port/api/status
-#  to check Web: curl http://node_IP:web-web_Port
+# check kubectl get ingress
+# curl http://<any-node-ip>:30080/
+# curl http://<any-node-ip>:30080/api/status
 
-# to check mysql: kubectl exec -it mysql-mysql-0 -- bash     mysql -u root -p       Enter password: r00tP@ss

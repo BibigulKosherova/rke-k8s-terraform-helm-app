@@ -2,6 +2,9 @@
 
 set -e
 
+echo "[INFO] Uninstalling NGINX Ingress Controller..."
+helm uninstall ingress -n default || true
+
 echo "[INFO] Destroying Helm charts from k8s-deployments..."
 cd k8s-deployments || exit 1
 terraform destroy -auto-approve

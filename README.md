@@ -48,10 +48,15 @@ A dedicated EC2 instance is used as a **bastion** or **jump host**. It is the si
 
 ---
 
-### 6. Service Exposure
-- `web` and `api` are exposed via **NodePort**
-- RKE does not support `LoadBalancer` services by default
-- Access via: `http://<node-public-ip>:<NodePort>`
+### 6. Ingress & Service Exposure
+
+- Instead of exposing services via `NodePort`, the setup uses **NGINX Ingress Controller**.
+- Ingress is installed automatically by the script with `helm install ingress-nginx`.
+- Services are of type `ClusterIP` and accessed **externally** through the ingress controller via **NodePort 30080** (HTTP).
+- Paths:
+  - `/` routes to the **web** frontend
+  - `/api` routes to the **backend API**
+
 
 ---
 
